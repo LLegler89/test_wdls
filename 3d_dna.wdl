@@ -53,23 +53,21 @@ task run3DDNA {
   >>>
 
 output {
-  File final_fasta = "scaffolds_FINAL.fasta"  # Main chrom-level scaffolds
-  File final_assembly = "scaffolds_FINAL.assembly"  # Juicebox-compatible assembly
-  File sealed_fasta = "scaffolds.final.fasta"  # Input + misjoin correction
-  File sealed_assembly = "scaffolds.final.assembly"  # Before gapped map
-  
-  File? final_hic = "scaffolds_FINAL.hic"  # Only if --build-gapped-map was used
-  File? sealed_hic = "scaffolds.final.hic"
-  File? polished_hic = "scaffolds.polished.hic"
-  File? resolved_hic = "scaffolds.resolved.hic"
-
-  Array[File]? edit_tracks = glob("*.bed")
-  Array[File]? scaffold_tracks = glob("*.scaffold_track.txt")
-  Array[File]? super_scaffold_tracks = glob("*.superscaf_track.txt")
-  Array[File]? annotation_files = glob("*.txt")  # includes edits.for.step.*, mismatches.at.step.*, etc.
-
-  File run_log = "../3d-dna.log"
+  File final_fasta = run3DDNA.final_fasta
+  File final_assembly = run3DDNA.final_assembly
+  File sealed_fasta = run3DDNA.sealed_fasta
+  File sealed_assembly = run3DDNA.sealed_assembly
+  File? final_hic = run3DDNA.final_hic
+  File? sealed_hic = run3DDNA.sealed_hic
+  File? polished_hic = run3DDNA.polished_hic
+  File? resolved_hic = run3DDNA.resolved_hic
+  Array[File]? edit_tracks = run3DDNA.edit_tracks
+  Array[File]? scaffold_tracks = run3DDNA.scaffold_tracks
+  Array[File]? super_scaffold_tracks = run3DDNA.super_scaffold_tracks
+  Array[File]? annotation_files = run3DDNA.annotation_files
+  File run_log = run3DDNA.run_log
 }
+
 
   runtime {
     docker: "leglerl/3d-dna:latest"
