@@ -2,9 +2,9 @@ version 1.0
 
 workflow run_3d_dna {
   input {
-    File draft_assembly_fasta         # e.g., gs://your-bucket/contigs.fasta
-    File merged_nodups                # e.g., gs://your-bucket/merged_nodups.txt
-    String output_prefix              # This string (e.g., "rabbit") should match the prefix used by 3D-DNA
+    File draft_assembly_fasta         # GCS path to input contig-level FASTA
+    File merged_nodups                # GCS path to Juicer output
+    String? output_prefix             # Optional prefix for naming
   }
 
   call run3DDNA {
@@ -26,28 +26,29 @@ task run3DDNA {
   input {
     File draft_assembly_fasta
     File merged_nodups
-    String output_prefix
+    String? output_prefix
   }
 
   command <<<
     set -eux
 
-    # Create and enter an output directory for pipeline results.
-    mkdir -p output
+    # Install dependencies if needed
+    apt-get update && apt-get install -y git curl samtools
 
-    # Copy the input files to the local working directory.
-    cp ~{draft_assembly_fasta} assembly.fasta
-    cp ~{merged_nodups} merged_nodups.txt
-
-    # Clone the 3D-DNA repository (since our Docker does not include it).
+    # Clone the 3D-DNA pipeline
     git clone https://github.com/aidenlab/3d-dna.git
     cd 3d-dna
 
-    # Run the full 3D-DNA pipeline; the script will run sealing, merging, and finalizing.
-    bash run-asm-pipeline.sh assembly.fasta merged_nodups.txt > ../output/3d-dna.log 2>&1
+    # Copy inputs
+    cp ~{draft_assembly_fasta} ./assembly.fasta
+    cp ~{merged_nodups} ./merged_nodups.txt
 
-    # According to the pipeline, after finalizing the output files should be named with the output prefix.
-    # For example, if output_prefix is "rabbit", we expect "rabbit.FINAL.fasta" and "rabbit.FINAL.assembly".
+    # Run the 3D-DNA pipeline
+    bash run-asm-pipeline.sh \
+      ./assembly.fasta \
+      ./merged_nodups.txt > ../3d-dna.log 2>&1
+
+    # Move outputs to root so WDL can find them
     cp ${output_prefix}.FINAL.fasta ../output/ || true
     cp ${output_prefix}.FINAL.assembly ../output/ || true
   >>>
