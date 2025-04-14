@@ -52,11 +52,24 @@ task run3DDNA {
     cp *FINAL.assembly ../
   >>>
 
-  output {
-    File scaffolded_assembly = "scaffolds_FINAL.assembly"
-    File final_assembly_fasta = "*final.fasta"
-    File run_log = "3d-dna.log"
-  }
+output {
+  File final_fasta = "scaffolds_FINAL.fasta"  # Main chrom-level scaffolds
+  File final_assembly = "scaffolds_FINAL.assembly"  # Juicebox-compatible assembly
+  File sealed_fasta = "scaffolds.final.fasta"  # Input + misjoin correction
+  File sealed_assembly = "scaffolds.final.assembly"  # Before gapped map
+  
+  File? final_hic = "scaffolds_FINAL.hic"  # Only if --build-gapped-map was used
+  File? sealed_hic = "scaffolds.final.hic"
+  File? polished_hic = "scaffolds.polished.hic"
+  File? resolved_hic = "scaffolds.resolved.hic"
+
+  Array[File]? edit_tracks = glob("*.bed")
+  Array[File]? scaffold_tracks = glob("*.scaffold_track.txt")
+  Array[File]? super_scaffold_tracks = glob("*.superscaf_track.txt")
+  Array[File]? annotation_files = glob("*.txt")  # includes edits.for.step.*, mismatches.at.step.*, etc.
+
+  File run_log = "../3d-dna.log"
+}
 
   runtime {
     docker: "leglerl/3d-dna:latest"
