@@ -22,6 +22,11 @@ workflow juicer_hic_pipeline {
         String output_bucket = "gs://your-bucket-name/output/" # Specify Google bucket for outputs
     }
 
+    call generate_bwa_index {
+        input:
+            reference_genome_file = reference_genome_file
+    }
+
     call run_juicer {
         input:
             genome_id = genome_id,
@@ -43,6 +48,24 @@ workflow juicer_hic_pipeline {
             early_exit = early_exit,
             R_end = R_end,
             output_bucket = output_bucket
+    }
+}
+
+task generate_bwa_index {
+    input {
+        File reference_genome_file
+    }
+    command <<< 
+        set -euo pipefail
+        bwa index ~{reference_genome_file}
+    >>>
+    output {
+        Array[File] bwa_index_files = glob("~{basename(reference_genome_file)}.*") # Capture all BWA index files
+    }
+    runtime {
+        docker: "rnakato/juicer" # Match Docker image
+        memory: "8G"
+        cpu: 4
     }
 }
 
@@ -101,5 +124,6 @@ task run_juicer {
         docker: "rnakato/juicer" # Match Docker image
         memory: "16G"
         cpu: 8
+        disks: "local-disk 500 HDD"
     }
 }
