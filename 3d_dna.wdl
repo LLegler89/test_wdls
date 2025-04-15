@@ -65,6 +65,6 @@ task run3DDNA {
     docker: "leglerl/3d-dna:latest"
     cpu: 16
     memory: "104G"
-    disks: "local-disk 50 HDD"
+    disks: "local-disk 500 HDD"
   }
 }
