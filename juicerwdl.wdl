@@ -77,7 +77,7 @@ task run_juicer {
             -l ~{long_queue} \
             -s ~{site} \
             -a '~{experiment_description}' \
-            ~{if length(R_end) > 0 then "-R " + R_end else ""} \
+            ~{if R_end != "" then "-R " + R_end else ""} \ # Fixed condition for R_end
             -S ~{stage} \
             -p ~{chrom_sizes} \
             -y ~{restriction_site_file} \
