@@ -33,6 +33,9 @@ task run3DDNA {
   command <<<
     set -eux
 
+    # Install dependencies 
+    apt-get update && apt-get install -y git curl samtools
+
     # Create and enter an output directory.
     mkdir -p output
 
