@@ -1,7 +1,7 @@
 workflow run_asm_pipeline {
     input {
-        String input_fasta_gs  // Google bucket path for input_fasta
-        String input_mnd_gs    // Google bucket path for input_mnd
+        String input_fasta_gs
+        String input_mnd_gs
         String mode = "haploid"
         Int input_size = 15000
         Int rounds = 2
