@@ -57,7 +57,7 @@ task run_juicer {
         # Create required directories for reference and fastq files
         mkdir -p ~{top_dir}/references
         mkdir -p ~{top_dir}/fastq
-        
+        mkdir -p ~/output
         # Copy FASTQ files into the fastq directory
         for fastq in ~{sep=' ' fastq_files}; do
             mv $fastq ~{top_dir}/fastq/
@@ -76,19 +76,20 @@ task run_juicer {
 
         # Validate that the aligned directory exists and contains files
         if [ -d "aligned" ] && [ "$(ls -A aligned)" ]; then
-            gsutil -m cp -r aligned ~{output_bucket}
+            gsutil -m cp -r ~{top_dir}/aligned ~{output_bucket}
+            cp -r ~{top_dir}/aligned/* ~/output/
         else
             echo "Aligned directory is missing or empty. Aborting."
             exit 1
         fi
     >>>
     output {
-        Array[File] all_outputs = glob("~{top_dir}/aligned/*") # Use relative path
+        Array[File] all_outputs = glob("output/*") # Use relative path
     }
     runtime {
         docker: "rnakato/juicer"
         memory: "64G"
         cpu: 16
-        disks: "local-disk 1000 HDD"
+        disks: "local-disk 2000 HDD"
     }
 }
