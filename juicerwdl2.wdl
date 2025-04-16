@@ -38,51 +38,52 @@ task run_juicer {
         Array[File] fastq_files
         String site = "none"
     }
-    command <<<'
+    command <<< 
         set -euo pipefail
 
- # Clone the juicer repository
+        # Clone the Juicer repository
         git clone https://github.com/theaidenlab/juicer.git ~/juicer
         
         # Create and move into project directory
-        mkdir ~{top_dir}
+        mkdir -p ~{top_dir}
         cd ~{top_dir}
 
-        ln -s ~/opt/juicer/CPU scripts
+        ln -s ~/juicer/CPU scripts
         cd scripts/common
         wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
-        ln -s juicer_tools.1.9.9_jcuda.0.8.jar  juicer_tools.jar
+        ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
         cd ~{top_dir}
 
         # Create required directories for reference and fastq files
-        mkdir -p ~{top_dir}/references
-        mkdir -p ~{top_dir}/fastq
+        mkdir -p references
+        mkdir -p fastq
 
         # Copy reference genome and build index
-        cp ~{reference_genome_file} ~{top_dir}/references/
-        bwa index ~{top_dir}/references/$(basename ~{reference_genome_file})
+        cp ~{reference_genome_file} references/
+        bwa index references/$(basename ~{reference_genome_file})
 
         # Copy FASTQ files into the fastq directory
         for fastq in ~{sep=' ' fastq_files}; do
-            cp $fastq ~{top_dir}/fastq/
-        cd ~{top_dir}
+            cp $fastq fastq/
+        done
+
         # Run the Juicer pipeline
-        bash ~{top_dir}/scripts/juicer.sh \
-            -z ~{top_dir}/references/$(basename ~{reference_genome_file})\
+        bash scripts/juicer.sh \
+            -z references/$(basename ~{reference_genome_file}) \
             -e ~{experiment_description} \
             -p ~{chrom_sizes} \
-            -s ~{site} 
+            -s ~{site}
 
         # Validate that the aligned directory exists and contains files
-        if [ -d "~{top_dir}/aligned" ] && [ "$(ls -A ~{top_dir}/aligned)" ]; then
-            gsutil -m cp -r ~{top_dir}/aligned ~{output_bucket}
+        if [ -d "aligned" ] && [ "$(ls -A aligned)" ]; then
+            gsutil -m cp -r aligned ~{output_bucket}
         else
             echo "Aligned directory is missing or empty. Aborting."
             exit 1
         fi
-    >>> 
+    >>>
     output {
-        Array[File] all_outputs = glob("~{top_dir}/aligned/*")
+        Array[File] all_outputs = glob("aligned/*") # Use relative path
     }
     runtime {
         docker: "rnakato/juicer"
