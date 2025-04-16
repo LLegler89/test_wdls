@@ -55,20 +55,20 @@ task run_juicer {
         cd ~{top_dir}
 
         # Create required directories for reference and fastq files
-        mkdir -p references
-        mkdir -p fastq
-
-        # Copy reference genome and build index
-        cp ~{reference_genome_file} references/
-        bwa index references/$(basename ~{reference_genome_file})
-
+        mkdir -p ~{top_dir}/references
+        mkdir -p ~{top_dir}/fastq
+        
         # Copy FASTQ files into the fastq directory
         for fastq in ~{sep=' ' fastq_files}; do
-            cp $fastq fastq/
+            mv $fastq ~{top_dir}/fastq/
         done
 
+        # Copy reference genome and build index
+        mv ~{reference_genome_file} ~{top_dir}/references/
+        bwa index references/$(basename ~{reference_genome_file})
+
         # Run the Juicer pipeline
-        bash scripts/juicer.sh \
+        bash ~{top_dir}/scripts/juicer.sh \
             -z references/$(basename ~{reference_genome_file}) \
             -e ~{experiment_description} \
             -p ~{chrom_sizes} \
@@ -83,7 +83,7 @@ task run_juicer {
         fi
     >>>
     output {
-        Array[File] all_outputs = glob("aligned/*") # Use relative path
+        Array[File] all_outputs = glob("~{top_dir}/aligned/*") # Use relative path
     }
     runtime {
         docker: "rnakato/juicer"
