@@ -8,8 +8,9 @@ workflow juicer_hic_pipeline {
         File chrom_sizes = "gs://your-bucket-name/path/to/chrom_sizes.txt"
         File reference_genome_file = "gs://your-bucket-name/path/to/reference_genome.fa"
         String output_bucket = "gs://your-bucket-name/output/"
-        Array[File] fastq_files
+        Array [String] fastq_files = ["gs://your-bucket-name/path/to/fastq1.fastq.gz", "gs://your-bucket-name/path/to/fastq2.fastq.gz"]
         Int additional_disk_space_gb = 100
+        Int machine_mem_gb = 64
     }
 
     call run_juicer {
@@ -21,7 +22,8 @@ workflow juicer_hic_pipeline {
             reference_genome_file = reference_genome_file,
             output_bucket = output_bucket,
             fastq_files = fastq_files,
-            additional_disk_space_gb = additional_disk_space_gb
+            additional_disk_space_gb = additional_disk_space_gb,
+            machine_mem_gb = machine_mem_gb
     }
 
     output {
@@ -40,9 +42,11 @@ task run_juicer {
         Array[File] fastq_files
         String site = "none"
         Int additional_disk_space_gb 
+        Int machine_mem_gb 
     }
     
-      Int GB_of_space = ceil((size(fastq_files,"GB") * 3) + additional_disk_space_gb)
+    Int mem_gb = machine_mem_gb -1
+    Int GB_of_space = ceil((size(fastq_files,"GB") * 3) + additional_disk_space_gb)
 
     command <<< 
         set -euo pipefail
@@ -66,7 +70,7 @@ task run_juicer {
         mkdir -p ~/output
         # Copy FASTQ files into the fastq directory
         for fastq in ~{sep=' ' fastq_files}; do
-            mv $fastq ~{top_dir}/fastq/
+            gsutil cp $fastq fastq/
         done
 
         # Copy reference genome and build index
@@ -95,7 +99,7 @@ task run_juicer {
     
     runtime {
         docker: "rnakato/juicer"
-        memory: "64 GB"
+        memory: mem_gb + " GB"
         cpu: 16
         disks: "local-disk " + GB_of_space + " HDD"
     }
