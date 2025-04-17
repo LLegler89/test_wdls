@@ -9,6 +9,7 @@ workflow juicer_hic_pipeline {
         File reference_genome_file = "gs://your-bucket-name/path/to/reference_genome.fa"
         String output_bucket = "gs://your-bucket-name/output/"
         Array[File] fastq_files
+        Int additional_disk_space_gb = 100
     }
 
     call run_juicer {
@@ -19,7 +20,8 @@ workflow juicer_hic_pipeline {
             chrom_sizes = chrom_sizes,
             reference_genome_file = reference_genome_file,
             output_bucket = output_bucket,
-            fastq_files = fastq_files
+            fastq_files = fastq_files,
+            additional_disk_space_gb = additional_disk_space_gb
     }
 
     output {
@@ -37,7 +39,11 @@ task run_juicer {
         String output_bucket
         Array[File] fastq_files
         String site = "none"
+        Int additional_disk_space_gb 
     }
+    
+      Int GB_of_space = ceil((size(fastq_files,"GB") * 3) + additional_disk_space_gb)
+
     command <<< 
         set -euo pipefail
 
@@ -86,10 +92,11 @@ task run_juicer {
     output {
         Array[File] all_outputs = glob("output/*") # Use relative path
     }
+    
     runtime {
         docker: "rnakato/juicer"
-        memory: "64G"
+        memory: "64 GB"
         cpu: 16
-        disks: "local-disk 2000 HDD"
+        disks: "local-disk " + GB_of_space + " HDD"
     }
 }
