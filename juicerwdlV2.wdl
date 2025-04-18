@@ -41,19 +41,19 @@ task run_juicer {
         String output_bucket
         Array[File] fastq_files
         String site = "none"
-        Int additional_disk_space_gb 
-        Int machine_mem_gb 
+        Int additional_disk_space_gb
+        Int machine_mem_gb
     }
-    
+
     Int mem_gb = machine_mem_gb -1
     Int GB_of_space = ceil((size(fastq_files,"GB") * 5) + additional_disk_space_gb)
 
-    command <<< 
+    command <<<
         set -euo pipefail
 
         # Clone the Juicer repository
         git clone https://github.com/theaidenlab/juicer.git ~/juicer
-        
+
         # Create and move into project directory
         mkdir -p ~{top_dir}
         cd ~{top_dir}
@@ -89,7 +89,7 @@ task run_juicer {
     output {
         Array[File] all_outputs = glob("aligned/*") # Use relative path
     }
-    
+
     runtime {
         docker: "leglerl/juicydock_v2"
         memory: mem_gb + " GB"
