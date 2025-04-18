@@ -1,15 +1,15 @@
-task run_juicer {
-  input {
-    String top_dir                  
-    String experiment_description
-    File chrom_sizes
-    File reference_genome_file
-    String output_bucket
-    Array[File] fastq_files
-    String site = "none"
-    Int additional_disk_space_gb
-    Int machine_mem_gb
-  }
+workflow juicer_hic_pipeline {
+    input {
+        String top_dir = "/mnt/disks/local-disk/juicer/project"
+        String site = "none"
+        String experiment_description = "My Hi-C experiment"
+        File chrom_sizes = "gs://your-bucket-name/path/to/chrom_sizes.txt"
+        File reference_genome_file = "gs://your-bucket-name/path/to/reference_genome.fa"
+        String output_bucket = "gs://your-bucket-name/output/"
+        Array [String] fastq_files = ["gs://your-bucket-name/path/to/fastq1.fastq.gz", "gs://your-bucket-name/path/to/fastq2.fastq.gz"]
+        Int additional_disk_space_gb = 100
+        Int machine_mem_gb = 64
+    }
 
   Int mem_gb        = machine_mem_gb - 1
   Int GB_of_space   = ceil((size(fastq_files, "GB") * 5) + additional_disk_space_gb)
