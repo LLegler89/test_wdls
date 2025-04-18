@@ -84,10 +84,10 @@ task run_juicer {
             -p ~{chrom_sizes} \
             -s ~{site}
 
-        # Validate that the aligned directory exists and contains files
+        
     >>>
     output {
-        Array[File] all_outputs = glob("aligned/*") # Use relative path
+        Array[File] all_outputs = glob("/opt/juicer/project/aligned/*") # Use relative path
     }
 
     runtime {
