@@ -1,14 +1,14 @@
 task run_juicer {
   input {
-    String top_dir                  # e.g. "juicer_project"
+    String top_dir                  
     String experiment_description
-    File   chrom_sizes
-    File   reference_genome_file
+    File chrom_sizes
+    File reference_genome_file
     String output_bucket
     Array[File] fastq_files
     String site = "none"
-    Int    additional_disk_space_gb
-    Int    machine_mem_gb
+    Int additional_disk_space_gb
+    Int machine_mem_gb
   }
 
   Int mem_gb        = machine_mem_gb - 1
