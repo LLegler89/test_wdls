@@ -2,7 +2,7 @@ version 1.0
  
  workflow juicer_hic_pipeline {
      input {
-         String top_dir = "/mnt/disks/local-disk/juicer/project"
+         String top_dir = "/cromwell_root/juicer/project"
          String site = "none"
          String experiment_description = "My Hi-C experiment"
          File chrom_sizes = "gs://your-bucket-name/path/to/chrom_sizes.txt"
@@ -88,8 +88,7 @@ version 1.0
          ln -s ~{top_dir}/aligned ~/aligned
      >>>
      output {
-         Array[File] all_outputs = glob("/opt/juicer/project/aligned/*") # Use relative path
-         Array[File] all_outputs = glob("aligned/*") # Use relative path
+         Array[File] all_outputs = glob("output/*") # Use relative path
      }
  
      runtime {
@@ -98,3 +97,4 @@ version 1.0
          cpu: 16
          disks: "local-disk " + GB_of_space + " HDD"
      }
+        }
