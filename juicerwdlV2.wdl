@@ -2,7 +2,7 @@ version 1.0
  
  workflow juicer_hic_pipeline {
      input {
-         String top_dir = "/cromwell_root/juicer/project"
+         String top_dir = "/cromwell_root/project"
          String site = "none"
          String experiment_description = "My Hi-C experiment"
          File chrom_sizes = "gs://your-bucket-name/path/to/chrom_sizes.txt"
@@ -50,15 +50,16 @@ version 1.0
  
      command <<<
          set -euo pipefail
- 
-         # Clone the Juicer repository
-         git clone https://github.com/theaidenlab/juicer.git ~/juicer
- 
+
          # Create and move into project directory
          mkdir -p ~{top_dir}
          cd ~{top_dir}
- 
-         ln -s ~/juicer/CPU scripts
+
+         # Clone the Juicer repository
+         git clone https://github.com/theaidenlab/juicer.git
+         cp -R juicer/CPU/common/ aidenlab/scripts/common
+
+         ln -s juicer/CPU scripts
          cd scripts/common
          wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
          ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
@@ -67,7 +68,7 @@ version 1.0
          # Create required directories for reference and fastq files
          mkdir -p ~{top_dir}/references
          mkdir -p ~{top_dir}/fastq
-         mkdir -p ~/output
+ 
          # Soft link the FASTQ files into the fastq directory
          for fastq in ~{sep=' ' fastq_files}; do
              ln -s $fastq fastq/
@@ -84,15 +85,13 @@ version 1.0
              -p ~{chrom_sizes} \
              -s ~{site}
  
-         
-         ln -s ~{top_dir}/aligned ~/aligned
      >>>
      output {
-         Array[File] all_outputs = glob("output/*") # Use relative path
+         Array[File] all_outputs = glob("aligned/*") # Use relative path
      }
  
      runtime {
-         docker: "leglerl/juicydock_v2"
+         docker: "leglerl/juicydock_v3"
          memory: mem_gb + " GB"
          cpu: 16
          disks: "local-disk " + GB_of_space + " HDD"
