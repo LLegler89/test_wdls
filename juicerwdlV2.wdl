@@ -58,7 +58,7 @@ version 1.0
          mkdir -p ~{top_dir}
          cd ~{top_dir}
 
-         git clone https://github.com/theaidenlab/juicer.git ./aidenlab
+         mkdir aidenlab
          cd aidenlab
          ln -s ~/juicer/CPU scripts
          
