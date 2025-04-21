@@ -54,14 +54,8 @@ version 1.0
          # Clone the Juicer repository
          git clone https://github.com/theaidenlab/juicer.git ~/juicer
          
-         # Create and move into project directoryr
+         # Create and move into project directory 
          mkdir -p ~{top_dir}
-         cd ~{top_dir}
-
-         mkdir aidenlab
-         cd aidenlab
-         ln -s ~/juicer/CPU scripts
-         
          cd ~{top_dir}
 
          ln -s ~/juicer/CPU scripts
@@ -85,15 +79,34 @@ version 1.0
  
          # Run the Juicer pipeline
          bash ~{top_dir}/scripts/juicer.sh \
+             -D ~{top_dir} \
              -z references/$(basename ~{reference_genome_file}) \
              -e ~{experiment_description} \
              -p ~{chrom_sizes} \
-             -s ~{site}
+             -s ~{site} \
+             -y
  
      >>>
      output {
-         Array[File] all_outputs = glob("aligned/*") # Use relative path
-     }
+         # All files from any directory (full capture)
+         Array[File] all_outputs = glob("**")
+
+         # Specifically capture .hic file (usually named inter.hic)
+         Array[File] hic_files = glob("*.hic")
+
+         # Capture alignment stats, merged_nodups.txt is one key output
+         Array[File] stats_outputs = glob("*.txt")
+
+         # Capture BAM files in the aligned folder
+         Array[File] bam_files = glob("aligned/*.bam")
+
+         # Capture any log files
+         Array[File] log_files = glob("*.log")
+
+         # Capture other common outputs
+         Array[File] split_files = glob("splits/*")
+         Array[File] intermediate_files = glob("intermediate/*")
+          }
  
      runtime {
          docker: "leglerl/juicydock_v3"
