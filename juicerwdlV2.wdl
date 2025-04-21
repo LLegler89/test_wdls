@@ -59,6 +59,10 @@ version 1.0
          cd ~{top_dir}
 
          git clone https://github.com/theaidenlab/juicer.git ./aidenlab
+         cd aidenlab
+         ln -s ~/juicer/CPU scripts
+         
+         cd ~{top_dir}
 
          ln -s ~/juicer/CPU scripts
          cd scripts/common
