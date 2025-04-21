@@ -52,14 +52,13 @@ version 1.0
          set -euo pipefail
 
          # Clone the Juicer repository
-         git clone https://github.com/theaidenlab/juicer.git
+         git clone https://github.com/theaidenlab/juicer.git ~/juicer
          
-         # Create and move into project directory
+         # Create and move into project directoryr
          mkdir -p ~{top_dir}
          cd ~{top_dir}
 
-         mkdir -p ~{top_dir}/aidenlab/scripts/common
-         cp -R ~/juicer/CPU/common/ ~{top_dir}/aidenlab/scripts/common
+         git clone https://github.com/theaidenlab/juicer.git ./aidenlab
 
          ln -s ~/juicer/CPU scripts
          cd scripts/common
