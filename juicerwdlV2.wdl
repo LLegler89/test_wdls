@@ -51,16 +51,17 @@ version 1.0
      command <<<
          set -euo pipefail
 
+         # Clone the Juicer repository
+         git clone https://github.com/theaidenlab/juicer.git
+         
          # Create and move into project directory
          mkdir -p ~{top_dir}
          cd ~{top_dir}
 
-         # Clone the Juicer repository
-         git clone https://github.com/theaidenlab/juicer.git
          mkdir -p ~{top_dir}/aidenlab/scripts/common
-         cp -R ~{top_dir}/juicer/CPU/common/ ~{top_dir}/aidenlab/scripts/common
+         cp -R ~/juicer/CPU/common/ ~{top_dir}/aidenlab/scripts/common
 
-         ln -s juicer/CPU scripts
+         ln -s ~/juicer/CPU scripts
          cd scripts/common
          wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
          ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
