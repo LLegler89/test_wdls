@@ -57,7 +57,8 @@ version 1.0
 
          # Clone the Juicer repository
          git clone https://github.com/theaidenlab/juicer.git
-         cp -R juicer/CPU/common/ aidenlab/scripts/common
+         mkdir -p ~{top_dir}/aidenlab/scripts/common
+         cp -R ~{top_dir}/juicer/CPU/common/ ~{top_dir}/aidenlab/scripts/common
 
          ln -s juicer/CPU scripts
          cd scripts/common
