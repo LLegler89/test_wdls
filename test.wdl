@@ -2,7 +2,7 @@ version 1.0
 
 workflow juicer_hic_pipeline {
   input {
-    String test_text = "Hello world"
+    String test_text
   }
 
   call run_juicer {
@@ -32,16 +32,16 @@ task run_juicer {
     echo "Simulating Juicer file structure..."
 
     mkdir -p aligned splits intermediate
-
+    ls
     # Create fake files in each relevant folder
-    echo "${test_text}" > test.hic
-    echo "${test_text}" > run.log
-    echo "${test_text}" > summary.txt
-    echo "${test_text}" > aligned/test_1.bam
-    echo "${test_text}" > aligned/test_2.bam
-    echo "${test_text}" > aligned/merged_nodups.txt
-    echo "${test_text}" > splits/dummy_split.txt
-    echo "${test_text}" > intermediate/dummy_intermediate.txt
+    echo "~{test_text}" > test.hic
+    echo "~{test_text}" > run.log
+    echo "~{test_text}" > summary.txt
+    echo "~{test_text}" > aligned/test_1.bam
+    echo "~{test_text}" > aligned/test_2.bam
+    echo "~{test_text}" > aligned/merged_nodups.txt
+    echo "~{test_text}" > splits/dummy_split.txt
+    echo "~{test_text}" > intermediate/dummy_intermediate.txt
   >>>
 
   output {
