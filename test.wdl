@@ -1,3 +1,5 @@
+ version 1.0
+ 
  workflow juicer_hic_pipeline {
      input {
             String text = "Hello World"
