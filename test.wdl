@@ -24,22 +24,22 @@
         String top_dir
      }
  
-     command <<<
-        mkdir -p {top_dir}/output
+     command <<< 
+        mkdir -p "${top_dir}/output"
         echo "Creating output directory..."
-        cd /cromwell_root/test/output
+        cd "${top_dir}/output"
         echo "Creating a copy of the file..."
-        echo "Hello World" > copy.txt
+        echo "${text}" > copy.txt
         echo "This is a test file." >> copy.txt
         echo "The content of the file is:" >> copy.txt
         cat copy.txt
-        cp copy.txt /cromwell_root/test/output/copy2.txt
-        cp copy.txt /cromwell_root/test/output/copy3.txt
+        cp copy.txt copy2.txt
+        cp copy.txt copy3.txt
         echo "The file has been copied to the output directory."
         echo "File created successfully."
     >>>
     output {
-        Array[File] all_outputs = glob("/cromwell_root/test/output/*.txt")
+        Array[File] all_outputs = glob("${top_dir}/output/*.txt")
     }
     runtime {
         docker: "ubuntu:latest"
