@@ -2,13 +2,13 @@
  
  workflow juicer_hic_pipeline {
      input {
-            String text = "Hello World"
+            String test_text 
             String top_dir = "/cromwell_root/test"
      }
  
      call run_juicer {
          input:
-            text = text,
+            test_text = test_text,
             top_dir = top_dir
      }
  
@@ -20,7 +20,7 @@
  
  task run_juicer {
      input {
-        String text
+        String test_text
         String top_dir
      }
  
@@ -28,8 +28,9 @@
         mkdir -p "${top_dir}/output"
         echo "Creating output directory..."
         cd "${top_dir}/output"
-        echo "Creating a copy of the file..."
-        echo "${text}" > copy.txt
+        echo "Creating a copy of the file with the provided text..."
+        touch copy.txt
+        echo "${test_text}" > copy.txt
         echo "This is a test file." >> copy.txt
         echo "The content of the file is:" >> copy.txt
         cat copy.txt
@@ -39,7 +40,7 @@
         echo "File created successfully."
     >>>
     output {
-        Array[File] all_outputs = glob("${top_dir}/output/*.txt")
+        Array[File] all_outputs = glob("${top_dir}/output/*")
     }
     runtime {
         docker: "ubuntu:latest"
