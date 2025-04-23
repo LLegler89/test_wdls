@@ -25,21 +25,21 @@
      }
  
      command <<<
-        mkdir -p ~{top_dir}/output
+        mkdir -p {top_dir}/output
         echo "Creating output directory..."
-        cd ~/cromwell_root/test/output
+        cd /cromwell_root/test/output
         echo "Creating a copy of the file..."
         echo "Hello World" > copy.txt
         echo "This is a test file." >> copy.txt
         echo "The content of the file is:" >> copy.txt
         cat copy.txt
-        cp copy.txt ~/cromwell_root/test/output/copy2.txt
-        cp copy.txt ~/cromwell_root/test/output/copy3.txt
+        cp copy.txt /cromwell_root/test/output/copy2.txt
+        cp copy.txt /cromwell_root/test/output/copy3.txt
         echo "The file has been copied to the output directory."
         echo "File created successfully."
     >>>
     output {
-        Array[File] all_outputs = glob("cromwell_root/test/output/*.txt")
+        Array[File] all_outputs = glob("/cromwell_root/test/output/*.txt")
     }
     runtime {
         docker: "ubuntu:latest"
