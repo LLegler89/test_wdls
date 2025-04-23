@@ -1,50 +1,64 @@
- version 1.0
- 
- workflow juicer_hic_pipeline {
-     input {
-            String test_text 
-            String top_dir = "/cromwell_root/test"
-     }
- 
-     call run_juicer {
-         input:
-            test_text = test_text,
-            top_dir = top_dir
-     }
- 
-     output {
-         Array[File] all_outputs = run_juicer.all_outputs
-     }
- }
- 
- 
- task run_juicer {
-     input {
-        String test_text
-        String top_dir
-     }
- 
-     command <<< 
-        mkdir -p ${top_dir}/output
-        echo "Creating output directory..."
-        cd ${top_dir}/output
-        echo "Creating a copy of the file with the provided text..."
-        touch copy.txt
-        echo "${test_text}" > copy.txt
-        echo "This is a test file." >> copy.txt
-        echo "The content of the file is:" >> copy.txt
-        cat copy.txt
-        cp copy.txt copy2.txt
-        cp copy.txt copy3.txt
-        echo "The file has been copied to the output directory."
-        echo "File created successfully."
-    >>>
-    output {
-        Array[File] all_outputs = glob('${top_dir}/output/*')
-    }
-    runtime {
-        docker: "ubuntu:latest"
-        memory: "2 GB"
-        cpu: 1
-    }
- }
+version 1.2
+
+workflow juicer_hic_pipeline {
+  input {
+    String test_text
+  }
+
+  call run_juicer {
+    input:
+      test_text = test_text
+  }
+
+  output {
+    Array[File] hic_files        = glob("*.hic")
+    Array[File] log_files        = glob("*.log")
+    Array[File] txt_stats        = glob("*.txt")
+    Array[File] bam_files        = glob("aligned/*.bam")
+    Directory splits_dir         = "splits"
+    Directory intermediate_dir   = "intermediate"
+    Directory aligned_dir        = "aligned"
+    File      merged_nodups      = "aligned/merged_nodups.txt"
+  }
+}
+
+task run_juicer {
+  input {
+    String test_text
+  }
+
+  command <<< 
+    set -euo pipefail
+
+    echo "Simulating Juicer file structure..."
+
+    mkdir -p aligned splits intermediate
+
+    # Create fake files in each relevant folder
+    echo "${test_text}" > test.hic
+    echo "${test_text}" > run.log
+    echo "${test_text}" > summary.txt
+    echo "${test_text}" > aligned/test_1.bam
+    echo "${test_text}" > aligned/test_2.bam
+    echo "${test_text}" > aligned/merged_nodups.txt
+    echo "${test_text}" > splits/dummy_split.txt
+    echo "${test_text}" > intermediate/dummy_intermediate.txt
+  >>>
+
+  output {
+    Array[File] hic_files        = glob("*.hic")
+    Array[File] log_files        = glob("*.log")
+    Array[File] txt_stats        = glob("*.txt")
+    Array[File] bam_files        = glob("aligned/*.bam")
+    Directory splits_dir         = "splits"
+    Directory intermediate_dir   = "intermediate"
+    Directory aligned_dir        = "aligned"
+    File      merged_nodups      = "aligned/merged_nodups.txt"
+  }
+
+  runtime {
+    docker: "ubuntu:latest"
+    memory: "1 GB"
+    cpu: 1
+  }
+}
