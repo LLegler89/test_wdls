@@ -1,16 +1,29 @@
-version 1.0
-
  workflow juicer_hic_pipeline {
      input {
-         String text = ""
+            String text = "Hello World"
+            String top_dir = "/cromwell_root/test"
      }
-        output {
-            File text
-        }
-
-
-    command <<<
-        mkdir -p ~/cromwell_root/test/output
+ 
+     call run_juicer {
+         input:
+            text = text,
+            top_dir = top_dir
+     }
+ 
+     output {
+         Array[File] all_outputs = run_juicer.all_outputs
+     }
+ }
+ 
+ 
+ task run_juicer {
+     input {
+        String text
+        String top_dir
+     }
+ 
+     command <<<
+        mkdir -p ~{top_dir}/output
         echo "Creating output directory..."
         cd ~/cromwell_root/test/output
         echo "Creating a copy of the file..."
@@ -18,14 +31,17 @@ version 1.0
         echo "This is a test file." >> copy.txt
         echo "The content of the file is:" >> copy.txt
         cat copy.txt
-        tt = copy.txt
+        cp copy.txt ~/cromwell_root/test/output/copy2.txt
+        cp copy.txt ~/cromwell_root/test/output/copy3.txt
+        echo "The file has been copied to the output directory."
         echo "File created successfully."
     >>>
     output {
-        File text = glob("cromwell_root/test/output/*.txt")[0]
+        Array[File] all_outputs = glob("cromwell_root/test/output/*.txt")
     }
     runtime {
         docker: "ubuntu:latest"
         memory: "2 GB"
         cpu: 1
     }
+ }
