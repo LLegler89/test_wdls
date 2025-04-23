@@ -11,14 +11,13 @@ workflow juicer_hic_pipeline {
   }
 
   output {
-    Array[File] hic_files        = glob("*.hic")
-    Array[File] log_files        = glob("*.log")
-    Array[File] txt_stats        = glob("*.txt")
-    Array[File] bam_files        = glob("aligned/*.bam")
-    Directory splits_dir         = "splits"
-    Directory intermediate_dir   = "intermediate"
-    Directory aligned_dir        = "aligned"
-    File      merged_nodups      = "aligned/merged_nodups.txt"
+    Array[File] hic_files        = run_juicer.hic_files
+    Array[File] log_files        = run_juicer.log_files
+    Array[File] txt_stats        = run_juicer.txt_stats
+    Array[File] bam_files        = run_juicer.bam_files
+    Array[File] splits_files     = run_juicer.splits_files
+    Array[File] intermediate_files = run_juicer.intermediate_files
+    File        merged_nodups    = run_juicer.merged_nodups
   }
 }
 
@@ -46,14 +45,13 @@ task run_juicer {
   >>>
 
   output {
-    Array[File] hic_files        = glob("*.hic")
-    Array[File] log_files        = glob("*.log")
-    Array[File] txt_stats        = glob("*.txt")
-    Array[File] bam_files        = glob("aligned/*.bam")
-    Directory splits_dir         = "splits"
-    Directory intermediate_dir   = "intermediate"
-    Directory aligned_dir        = "aligned"
-    File      merged_nodups      = "aligned/merged_nodups.txt"
+    Array[File] hic_files           = glob("*.hic")
+    Array[File] log_files           = glob("*.log")
+    Array[File] txt_stats           = glob("*.txt")
+    Array[File] bam_files           = glob("aligned/*.bam")
+    Array[File] splits_files        = glob("splits/*")
+    Array[File] intermediate_files  = glob("intermediate/*")
+    File        merged_nodups       = "aligned/merged_nodups.txt"
   }
 
   runtime {
