@@ -25,9 +25,12 @@
      }
  
      command <<< 
+        set -euo pipefail
+        mkdir output
         mkdir -p ${top_dir}/output
         echo "Creating output directory..."
-        cd ${top_dir}/output
+        cd ${top_dir}
+        cd output
         echo "Creating a copy of the file with the provided text..."
         touch copy.txt
         echo "${test_text}" > copy.txt
@@ -38,9 +41,10 @@
         cp copy.txt copy3.txt
         echo "The file has been copied to the output directory."
         echo "File created successfully."
+        ln -s copy.txt ~/output/copy.txt
     >>>
     output {
-        Array[File] all_outputs = glob('${top_dir}/output/*')
+        Array[File] all_outputs = glob('output/*')
     }
     runtime {
         docker: "ubuntu:latest"
