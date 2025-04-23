@@ -42,14 +42,19 @@ task run_juicer {
     set -euo pipefail
     # Work in the task’s own call directory:
     git clone https://github.com/theaidenlab/juicer.git juicer
-    cd ${PWD}
     ln -s juicer/CPU scripts
     cd scripts/common
     wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
     ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
-    cd ${PWD}
+    cd ../..
+    
     mkdir -p references fastq
-    for f in ~{sep=' ' fastq_files}; do ln -s "$f" fastq/; done
+    
+    # Soft link the FASTQ files into the fastq directory
+    for fastq in ~{sep=' ' fastq_files}; do
+        ln -s $fastq fastq/
+    done
+    
     ln -s ~{reference_genome_file} references/
     bwa index references/$(basename ~{reference_genome_file})
     bash scripts/juicer.sh \
