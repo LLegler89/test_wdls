@@ -2,7 +2,7 @@ version 1.0
 
 workflow juicer_hic_pipeline {
   input {
-    String test_text
+    String test_text = "Hello world"
   }
 
   call run_juicer {
