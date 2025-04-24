@@ -17,8 +17,8 @@ workflow juicer_hic_pipeline {
       reference_genome_file = reference_genome_file,
       chrom_sizes           = chrom_sizes,
       experiment_description= experiment_description,
-      site                  = site
-      Int         GB_of_space = GB_of_space
+      site                  = site,
+      Int         GB_of_space = GB_of_space,
       Int         mem_gb = mem_gb
   }
 
