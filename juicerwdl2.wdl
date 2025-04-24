@@ -7,6 +7,8 @@ workflow juicer_hic_pipeline {
     File        chrom_sizes
     String      experiment_description = "My Hi-C experiment"
     String      site               = "none"
+    Int         GB_of_space    = 500
+    Int         mem_gb  = 64
   }
 
   call run_juicer {
@@ -79,8 +81,8 @@ task run_juicer {
 
   runtime {
     docker: "leglerl/juicydock_v3"
+    memory: mem_gb + " GB"
     cpu: 16
-    memory: "63 GB"
-    disks: "local-disk " + ceil((size(fastq_files,"GB")*5)+100) + " HDD"
+    disks: "local-disk " + GB_of_space + " HDD"
   }
 }
