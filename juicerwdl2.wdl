@@ -38,6 +38,8 @@ task run_juicer {
     File        chrom_sizes
     String      experiment_description
     String      site
+    Int         GB_of_space
+    Int         mem_gb
   }
 
   command <<< 
