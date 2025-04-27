@@ -7,8 +7,9 @@ workflow juicer_hic_pipeline {
     File        chrom_sizes
     String      experiment_description = "My Hi-C experiment"
     String      site               = "none"
-    Int         GB_of_space    = 500
+    Int         Extra_disk_space    = 500
     Int         mem_gb  = 64
+    Int         threads = 16
   }
 
   call run_juicer {
@@ -18,8 +19,9 @@ workflow juicer_hic_pipeline {
       chrom_sizes           = chrom_sizes,
       experiment_description= experiment_description,
       site                  = site,
-      GB_of_space           = GB_of_space,
+      Extra_disk_space      = Extra_disk_space,
       mem_gb                = mem_gb
+      threads               = threads
   }
 
   output {
@@ -36,9 +38,11 @@ task run_juicer {
     File        chrom_sizes
     String      experiment_description
     String      site
-    Int         GB_of_space
+    Int         Extra_disk_space
     Int         mem_gb
+    Int         threads
   }
+  Int GB_of_space = ceil(size(fastq_files, "GB") * 5) + Extra_disk_space
 
   command <<<
     set -euo pipefail
@@ -74,6 +78,7 @@ task run_juicer {
       -e ~{experiment_description} \
       -p ~{chrom_sizes} \
       -s ~{site} \
+      -t ~{threads} \
       -y
   >>>
 
