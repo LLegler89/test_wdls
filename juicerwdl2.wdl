@@ -18,18 +18,14 @@ workflow juicer_hic_pipeline {
       chrom_sizes           = chrom_sizes,
       experiment_description= experiment_description,
       site                  = site,
-      GB_of_space = GB_of_space,
-      mem_gb = mem_gb
+      GB_of_space           = GB_of_space,
+      mem_gb                = mem_gb
   }
 
   output {
-    Array[File] hic_files        = run_juicer.hic_files
-    Array[File] log_files        = run_juicer.log_files
-    Array[File] txt_stats        = run_juicer.txt_stats
-    Array[File] bam_files        = run_juicer.bam_files
-    Array[File] splits_files     = run_juicer.splits_files
-    Array[File] intermediate_files = run_juicer.intermediate_files
-    File        merged_nodups    = run_juicer.merged_nodups
+    Array[File] hic_files     = run_juicer.hic_files
+    Array[File] log_files     = run_juicer.log_files
+    File        merged_nodups = run_juicer.merged_nodups
   }
 }
 
@@ -44,25 +40,34 @@ task run_juicer {
     Int         mem_gb
   }
 
-  command <<< 
+  command <<<
     set -euo pipefail
-    # Work in the task’s own call directory:
+
+    # Set Java memory options dynamically
+    export _JAVA_OPTIONS="-Xmx~{mem_gb}g -Xms~{mem_gb}g"
+
+    # Clone Juicer and setup environment
     git clone https://github.com/theaidenlab/juicer.git juicer
     ln -s juicer/CPU scripts
+
     cd scripts/common
     wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
     ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
     cd ../..
-    
+
     mkdir -p references fastq
-    
+
     # Soft link the FASTQ files into the fastq directory
     for fastq in ~{sep=' ' fastq_files}; do
-        ln -s $fastq fastq/
+        ln -s "$fastq" fastq/
     done
-    
+
     ln -s ~{reference_genome_file} references/
+
+    # Index the reference genome
     bwa index references/$(basename ~{reference_genome_file})
+
+    # Run Juicer
     bash scripts/juicer.sh \
       -D ${PWD} \
       -z references/$(basename ~{reference_genome_file}) \
@@ -73,15 +78,10 @@ task run_juicer {
   >>>
 
   output {
-    Array[File] hic_files           = glob("*.hic")
-    Array[File] log_files           = glob("*.log")
-    Array[File] txt_stats           = glob("*.txt")
-    Array[File] bam_files           = glob("aligned/*")
-    Array[File] splits_files        = glob("splits/*")
-    Array[File] intermediate_files  = glob("intermediate/*")
-    File        merged_nodups       = "aligned/merged_nodups.txt"
+    Array[File] hic_files     = glob("*.hic")
+    Array[File] log_files     = glob("*.log")
+    File        merged_nodups = "aligned/merged_nodups.txt"
   }
-
 
   runtime {
     docker: "leglerl/juicydock_v3"
@@ -90,3 +90,4 @@ task run_juicer {
     disks: "local-disk " + GB_of_space + " HDD"
   }
 }
+
