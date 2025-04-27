@@ -20,7 +20,7 @@ workflow juicer_hic_pipeline {
       experiment_description= experiment_description,
       site                  = site,
       Extra_disk_space      = Extra_disk_space,
-      mem_gb                = mem_gb
+      mem_gb                = mem_gb,
       threads               = threads
   }
 
