@@ -8,7 +8,7 @@ workflow juicer_hic_pipeline {
     String      site               = "none"
     Int         Extra_disk_space    = 500
     Int         mem_gb  = 64
-    Int         threads = 16
+    Int         threads = 32
     String      genome_id = "my genome ID"
     String      output_bucket
   }
@@ -96,7 +96,7 @@ task run_juicer {
   runtime {
     docker: "leglerl/juicydock_v3"
     memory: mem_gb + " GB"
-    cpu: 16
+    cpu: 32
     disks: "local-disk " + GB_of_space + " HDD"
   }
 }
