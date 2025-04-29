@@ -10,6 +10,8 @@ workflow juicer_hic_pipeline {
     Int         Extra_disk_space    = 500
     Int         mem_gb  = 64
     Int         threads = 16
+    String      genome_id = "my genome ID"
+    String      output_bucket
   }
 
   call run_juicer {
@@ -21,7 +23,9 @@ workflow juicer_hic_pipeline {
       site                  = site,
       Extra_disk_space      = Extra_disk_space,
       mem_gb                = mem_gb,
-      threads               = threads
+      threads               = threads,
+      genome_id             = genome_id,
+      output_bucket         = output_bucket
   }
 
   output {
@@ -41,6 +45,8 @@ task run_juicer {
     Int         Extra_disk_space
     Int         mem_gb
     Int         threads
+    String      genome_id
+    String      output_bucket
   }
   Int GB_of_space = ceil(size(fastq_files, "GB") * 5) + Extra_disk_space
 
@@ -79,7 +85,11 @@ task run_juicer {
       -p ~{chrom_sizes} \
       -s ~{site} \
       -t ~{threads} \
+      -g ~{genome_id} \
       -y
+
+      gsutil cp -r aligned ~{output_bucket}
+
   >>>
 
   output {
