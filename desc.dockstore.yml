@@ -1,6 +1,6 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    name: test
-    primaryDescriptorPath: /test.wdl
+    name: juicerwdl2
+    primaryDescriptorPath: /juicerwdl2.wdl
   
