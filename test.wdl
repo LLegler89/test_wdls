@@ -8,7 +8,7 @@ workflow juicer_hic_pipeline {
 
   call run_juicer {
     input:
-      test_text = test_text
+      test_text = test_text,
       bucket_location = bucket_location
   }
 
