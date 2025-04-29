@@ -3,11 +3,13 @@ version 1.0
 workflow juicer_hic_pipeline {
   input {
     String test_text
+    String bucket_location
   }
 
   call run_juicer {
     input:
       test_text = test_text
+      bucket_location = bucket_location
   }
 
   output {
@@ -42,6 +44,9 @@ task run_juicer {
     echo "~{test_text}" > aligned/merged_nodups.txt
     echo "~{test_text}" > splits/dummy_split.txt
     echo "~{test_text}" > intermediate/dummy_intermediate.txt
+
+    gsutil cp -r aligned ~{bucket_location}
+
   >>>
 
   output {
@@ -55,7 +60,7 @@ task run_juicer {
   }
 
   runtime {
-    docker: "ubuntu:latest"
+    docker: "leglerl/juicydock_v3"
     memory: "1 GB"
     cpu: 1
   }
