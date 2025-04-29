@@ -46,7 +46,7 @@ task run_juicer {
     echo "~{test_text}" > splits/dummy_split.txt
     echo "~{test_text}" > intermediate/dummy_intermediate.txt
 
-    gsutil cp -r aligned ~{bucket_location}
+    gsutil cp -r aligned "~{bucket_location}"
 
   >>>
 
