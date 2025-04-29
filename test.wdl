@@ -26,6 +26,7 @@ workflow juicer_hic_pipeline {
 task run_juicer {
   input {
     String test_text
+    String bucket_location
   }
 
   command <<< 
