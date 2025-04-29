@@ -88,8 +88,6 @@ task run_juicer {
       -g ~{genome_id} \
       -y
 
-      gsutil cp -r aligned ~{output_bucket}
-
   >>>
 
   output {
