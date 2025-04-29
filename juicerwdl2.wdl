@@ -4,7 +4,6 @@ workflow juicer_hic_pipeline {
   input {
     Array[File] fastq_files
     File        reference_genome_file
-    File        chrom_sizes
     String      experiment_description = "My Hi-C experiment"
     String      site               = "none"
     Int         Extra_disk_space    = 500
@@ -18,7 +17,6 @@ workflow juicer_hic_pipeline {
     input:
       fastq_files           = fastq_files,
       reference_genome_file = reference_genome_file,
-      chrom_sizes           = chrom_sizes,
       experiment_description= experiment_description,
       site                  = site,
       Extra_disk_space      = Extra_disk_space,
@@ -39,7 +37,6 @@ task run_juicer {
   input {
     Array[File] fastq_files
     File        reference_genome_file
-    File        chrom_sizes
     String      experiment_description
     String      site
     Int         Extra_disk_space
@@ -82,7 +79,7 @@ task run_juicer {
       -D ${PWD} \
       -z references/$(basename ~{reference_genome_file}) \
       -e ~{experiment_description} \
-      -p ~{chrom_sizes} \
+      -p  assembly \
       -s ~{site} \
       -t ~{threads} \
       -g ~{genome_id} \
@@ -103,4 +100,3 @@ task run_juicer {
     disks: "local-disk " + GB_of_space + " HDD"
   }
 }
-
