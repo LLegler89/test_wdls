@@ -58,8 +58,8 @@ task run_juicer {
     ln -s juicer/CPU scripts
 
     cd scripts/common
-    wget https://hicfiles.tc4ga.com/public/juicer/juicer_tools.1.9.9_jcuda.0.8.jar
-    ln -s juicer_tools.1.9.9_jcuda.0.8.jar juicer_tools.jar
+    wget https://github.com/aidenlab/juicer/releases/download/v1.6/juicer_tools.1.6.4_jcuda.0.8.jar
+    ln -s juicer_tools.1.6.4_jcuda.0.8.jar juicer_tools.jar
     cd ../..
 
     mkdir -p references fastq
