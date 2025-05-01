@@ -8,7 +8,7 @@ workflow juicer_hic_pipeline {
     String      site               = "none"
     Int         Extra_disk_space    = 500
     Int         mem_gb  = 64
-    Int         threads = 32
+    Int         threads = 16
     String      genome_id = "my genome ID"
     String      output_bucket
   }
@@ -28,7 +28,7 @@ workflow juicer_hic_pipeline {
 
   output {
     Array[File] hic_files     = run_juicer.hic_files
-    Array[File] log_files     = run_juicer.log_files
+    File merged_nodups_bam     = run_juicer.merged_nodups_bam
     File        merged_nodups = run_juicer.merged_nodups
   }
 }
@@ -82,21 +82,22 @@ task run_juicer {
       -p  assembly \
       -s ~{site} \
       -t ~{threads} \
-      -g ~{genome_id} \
-      -y
+      -g ~{genome_id}
+    
+    samtools view -F 1024 -O SAM aligned/merged_dedup.bam | awk -v mnd=1 -f scripts/common/sam_to_pre.awk > aligned/merged_nodups.txt
 
   >>>
 
   output {
     Array[File] hic_files     = glob("*.hic")
-    Array[File] log_files     = glob("*.log")
+    File        merged_nodups_bam = "aligned/merged_dedup.bam"
     File        merged_nodups = "aligned/merged_nodups.txt"
   }
 
   runtime {
     docker: "leglerl/juicydock_v3"
     memory: mem_gb + " GB"
-    cpu: 32
+    cpu: 16
     disks: "local-disk " + GB_of_space + " HDD"
   }
 }
