@@ -24,7 +24,7 @@ workflow juicer_hic_pipeline {
       mem_gb                = mem_gb,
       threads               = threads,
       genome_id             = genome_id,
-      output_bucket         = output_bucket
+      output_bucket         = output_bucket,
       chromosome_size_file  = chromosome_size_file
   }
 
