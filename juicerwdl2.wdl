@@ -11,6 +11,7 @@ workflow juicer_hic_pipeline {
     Int         threads = 16
     String      genome_id = "my genome ID"
     String      output_bucket
+    File        chromosome_size_file
   }
 
   call run_juicer {
@@ -24,6 +25,7 @@ workflow juicer_hic_pipeline {
       threads               = threads,
       genome_id             = genome_id,
       output_bucket         = output_bucket
+      chromosome_size_file  = chromosome_size_file
   }
 
   output {
@@ -44,6 +46,7 @@ task run_juicer {
     Int         threads
     String      genome_id
     String      output_bucket
+    File        chromosome_size_file
   }
   Int GB_of_space = ceil(size(fastq_files, "GB") * 5) + Extra_disk_space
 
@@ -79,7 +82,7 @@ task run_juicer {
       -D ${PWD} \
       -z references/$(basename ~{reference_genome_file}) \
       -e ~{experiment_description} \
-      -p  assembly \
+      -p ~{chromosome_size_file} \
       -s ~{site} \
       -t ~{threads} \
       -g ~{genome_id}
