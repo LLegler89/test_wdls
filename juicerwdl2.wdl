@@ -29,9 +29,10 @@ workflow juicer_hic_pipeline {
   }
 
   output {
-    Array[File] hic_files     = run_juicer.hic_files
-    File merged_nodups_bam     = run_juicer.merged_nodups_bam
-    File        merged_nodups = run_juicer.merged_nodups
+    File        inter_hic = "aligned/inter.hic"
+    File        inter30_hic = "aligned/inter_30.hic"
+    File        merged_nodups_bam = "aligned/merged_dedup.bam"
+    File        merged_nodups = "aligned/merged_nodups.txt"
   }
 }
 
@@ -88,11 +89,11 @@ task run_juicer {
       -g ~{genome_id}
     
     samtools view -F 1024 -O SAM aligned/merged_dedup.bam | awk -v mnd=1 -f scripts/common/sam_to_pre.awk > aligned/merged_nodups.txt
-
   >>>
 
   output {
-    Array[File] hic_files     = glob("*.hic")
+    File        inter_hic = "aligned/inter.hic"
+    File        inter30_hic = "aligned/inter_30.hic"
     File        merged_nodups_bam = "aligned/merged_dedup.bam"
     File        merged_nodups = "aligned/merged_nodups.txt"
   }
